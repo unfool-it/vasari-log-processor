@@ -6,43 +6,47 @@ const readline = require('readline');
 const pipelineAsync = promisify(pipeline);
 
 /**
- * Robust Regex for IP detection.
- * IPv4: Standard 4 octets.
- * IPv6: Simple hex/colon detection (refined for masking logic).
+ * Validated IPv4 Pattern: Matches 0-255 octets specifically.
  */
-const IPV4_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
-const IPV6_PATTERN = /\b(?:[0-9a-fA-F]{1,4}:){1,7}[0-9a-fA-F]{1,4}\b|\b::1\b/g;
+const IPV4_PATTERN = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g;
 
 /**
- * Mask the last octet of an IPv4 address.
+ * Comprehensive IPv6 Pattern: Handles standard, compressed, and dual formats.
+ */
+const IPV6_PATTERN = /\b(?:[a-fA-F0-9]{1,4}:){1,7}(?:[a-fA-F0-9]{1,4}|:)|(?::(?::[a-fA-F0-9]{1,4}){1,7})\b/g;
+
+/**
+ * Masks the last octet of an IPv4 address.
  */
 function anonymizeIpv4(ip) {
-    return ip.replace(/\.\d+$/, '.0');
+    return ip.substring(0, ip.lastIndexOf('.')) + '.0';
 }
 
 /**
- * Mask the last segment of an IPv6 address.
+ * Masks the last segment of an IPv6 address.
  */
 function anonymizeIpv6(ip) {
-    if (ip === '::1') return ip;
-    // Replace the last hex block with zeros
-    return ip.replace(/:[0-9a-fA-F]{1,4}$/, ':0000');
+    if (ip === '::1' || ip === '::') return ip;
+    const lastColon = ip.lastIndexOf(':');
+    if (lastColon === -1) return ip;
+    return ip.substring(0, lastColon) + ':0000';
 }
 
 /**
- * Main Transform Stream logic.
+ * High-performance Transform implementation
  */
-class AnonymizerStream extends Transform {
-    _transform(chunk, encoding, callback) {
-        let line = chunk.toString();
+class Anonymizer extends Transform {
+    constructor(options) {
+        super(options);
+    }
+
+    _transform(line, encoding, callback) {
+        // Line is provided as a string via readline interface
+        const processed = line.toString()
+            .replace(IPV4_PATTERN, anonymizeIpv4)
+            .replace(IPV6_PATTERN, anonymizeIpv6);
         
-        // Process IPv4
-        line = line.replace(IPV4_PATTERN, (match) => anonymizeIpv4(match));
-        
-        // Process IPv6
-        line = line.replace(IPV6_PATTERN, (match) => anonymizeIpv6(match));
-        
-        this.push(line + '\n');
+        this.push(processed + '\n');
         callback();
     }
 }
@@ -51,38 +55,36 @@ async function run(filePath) {
     const input = filePath ? fs.createReadStream(filePath) : process.stdin;
     const output = process.stdout;
 
-    console.error(`[INFO] Starting processing: ${filePath || 'stdin'}`);
+    if (filePath && !fs.existsSync(filePath)) {
+        console.error(`[ERROR] File not found: ${filePath}`);
+        process.exit(1);
+    }
+
+    console.error(`[INFO] Processing ${filePath || 'stdin'}...`);
 
     try {
-        // We use readline interface to handle line-by-line chunks correctly
         const rl = readline.createInterface({
             input: input,
             terminal: false
         });
 
-        const anonymizer = new Transform({
-            transform(line, encoding, callback) {
-                let processed = line.toString();
-                processed = processed.replace(IPV4_PATTERN, anonymizeIpv4);
-                processed = processed.replace(IPV6_PATTERN, anonymizeIpv6);
-                callback(null, processed + '\n');
-            }
-        });
+        const anonymizer = new Anonymizer();
 
+        // pipeline handles backpressure and error propagation automatically
         await pipelineAsync(
             rl,
             anonymizer,
             output
         );
         
-        console.error("[SUCCESS] Log processing complete.");
+        console.error("[SUCCESS] Processing complete.");
     } catch (err) {
-        console.error(`[ERROR] Processing failed: ${err.message}`);
+        console.error(`[FATAL] ${err.message}`);
         process.exit(1);
     }
 }
 
-// Entry Point
+// Execution block
 const args = process.argv.slice(2);
 run(args[0]).catch(err => {
     console.error(err);
