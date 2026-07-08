@@ -9,7 +9,7 @@
 The **Vasari Corridor** is a production-grade Node.js (TypeScript) implementation of a **Zero-Client Architecture**. Drawing inspiration from Giorgio Vasari's 1565 elevated bypass, this system facilitates high-status data transit by completely eliminating client-side exfiltration vectors.
 
 ### I. PROVENANCE & PHILOSOPHY
-In the ultra-luxury sector, the standard ad-tech stack (Meta Pixel, GTM, Hotjar) represents a catastrophic breach of the "white-glove" mandate. For the Ultra-High-Net-Worth Individual (UHNWI), digital exposure is not merely an annoyance—it is a physical security risk. This architecture acts as a digital bypass, ensuring that client interactions are never visible to the "public market" of third-party surveillance scripts.
+In the ultra-luxury sector, the standard ad-tech stack (Meta Pixel, GTM, Hotjar) represents a catastrophic breach of the "white-glove" mandate. For the Ultra-High-Net-Worth Individual (UHNWI), digital exposure is not only an annoyance—it is a physical security risk. This architecture acts as a digital bypass, ensuring that client interactions are never visible to the "public market" of third-party surveillance scripts.
 
 ### II. ARCHITECTURAL TOPOLOGY
 The system operates on a **Server-Side Anonymization (SSA)** model. All behavioral metrics are processed within the isolated perimeter of the sovereign infrastructure.
@@ -49,7 +49,7 @@ docker run -p 8080:8080 vasari-gateway
 
 ---
 
-### SECURITY AUDIT:
+ SECURITY AUDIT:
 *   **Audit Item 1 (XSS):** Confirmed strict CSP `script-src 'self'` prevents any inline or 3rd party scripts from executing in the browser.
 *   **Audit Item 2 (Data Exfiltration):** Implemented recursive `scrubPII` to prevent deep-nested JSON payloads from leaking sensitive data to backend logs.
 *   **Audit Item 3 (Fingerprinting):** IP Anonymization + Salted Scrypt hashing ensures that `ephemeralId` cannot be reversed to find a user's original IP or UA, thwarting identity graph construction.
