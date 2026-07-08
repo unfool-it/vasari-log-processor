@@ -9,7 +9,7 @@
 The **Vasari Corridor** is a production-grade Node.js (TypeScript) implementation of a **Zero-Client Architecture**. Drawing inspiration from Giorgio Vasari's 1565 elevated bypass, this system facilitates high-status data transit by completely eliminating client-side exfiltration vectors.
 
 ### I. PROVENANCE & PHILOSOPHY
-In the ultra-luxury sector, the standard ad-tech stack (Meta Pixel, GTM, Hotjar) represents a catastrophic breach of the "white-glove" mandate. For the Ultra-High-Net-Worth Individual (UHNWI), digital exposure is not only an annoyance—it is a physical security risk. This architecture acts as a digital bypass, ensuring that client interactions are never visible to the "public market" of third-party surveillance scripts.
+In the ultra-luxury sector, the standard ad-tech stack (Meta Pixel, GTM, Hotjar) represents a catastrophic breach of the "white-glove" mandate. For the Ultra-High-Net-Worth Individual (UHNWI), digital exposure is not only an annoyance, it is a physical security risk. This architecture acts as a digital bypass, ensuring that client interactions are never visible to the "public market" of third-party surveillance scripts.
 
 ### II. ARCHITECTURAL TOPOLOGY
 The system operates on a **Server-Side Anonymization (SSA)** model. All behavioral metrics are processed within the isolated perimeter of the sovereign infrastructure.
