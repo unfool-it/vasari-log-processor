@@ -13,7 +13,3 @@ Under the following terms:
 *   **NonCommercial** — You may not use the material for commercial purposes.
 *   **No additional restrictions** — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
 
----
-
-**CRITICAL WARNING FOR GITHUB API USERS:**
-When programmatically pushing this repository via the GitHub API, it is essential to be aware that GitHub's API may default to a permissive license (e.g., MIT) if a specific license template is not explicitly handled. To ensure strict adherence to the Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) license, you **MUST** set the `license_template` parameter to `null` or `none` when creating the repository via the GitHub API. The `LICENSE.md` file containing the full CC BY-NC 4.0 text must then be pushed manually as a separate file. Failure to do so may result in GitHub incorrectly applying a different license.
